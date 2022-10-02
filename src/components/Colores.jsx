@@ -1,21 +1,11 @@
-import React from "react";
-import { Card, Button, Row, Col } from "react-bootstrap";
+import { Col } from "react-bootstrap";
+import ItemColor from "./ItemColor";
 
-const Colores = () => {
+const Colores = (props) => {
   return (
-      <Row className="d-flex mt-5">
-        <Col sm={12} md={6} lg={3}>
-          <Card>
-            <Card.Title className="mx-3">Nombre de color</Card.Title>
-            <Card.Body>
-              <div className="color"></div>
-              <div className="d-flex justify-content-end">
-                <Button variant="danger">Borrar</Button>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+    <Col sm={12} md={4} lg={3}>
+      {props.arregloColor.map((color, posicion) => (<ItemColor key={posicion} nombreColor={color} borrarColor={props.borrarColor} />))}
+    </Col>
   );
 };
 
