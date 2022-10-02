@@ -47,7 +47,7 @@ const Formulario = () => {
                   placeholder="Ingrese un color en heg"
                   className="m-5 w-25"
                   minLength={4}
-                  maxLength={6}
+                  maxLength={7}
                   onChange={(e) => setColor(e.target.value)}
                   value={color}
                 ></Form.Control>
