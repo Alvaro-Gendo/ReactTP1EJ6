@@ -6,8 +6,7 @@ import { consultaAPI, crearColorAPI } from "../helpers/queires";
 import Colores from "./Colores";
 
 const Formulario = () => {
-
-
+  
   const [color, setColor] = useState([]);
 
   useEffect(() => {
@@ -79,6 +78,10 @@ const Formulario = () => {
                       value: 7,
                       message: "Maximo 7 caracteres",
                     },
+                    pattern:{
+                      value: /^#[a-zA-Z0-9]{6}|rgb\((?:\s*\d+\s*,){2}\s*[\d]+\)|rgba\((\s*\d+\s*,){3}[\d]+\)|hsl\(\s*\d+\s*(\s*\s*\d+){2}\)|hsla\(\s*\d+(\s*,\s*\d+\s*){2}\s*\s*[\d]+\)$/,
+                      message: "Ingresar color en hex."
+                    }
                   })}
                 ></Form.Control>
                 <Form.Text className="text-danger">
