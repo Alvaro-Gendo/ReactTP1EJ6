@@ -1,14 +1,14 @@
 import { Row } from "react-bootstrap";
 import ItemColor from "./ItemColor";
 
-const Colores = (props) => {
+const Colores = ({color, setColor}) => {
   return (
     <Row>
-          {props.arregloColor.map((color, posicion) => (
+          {color.map((color) => (
             <ItemColor
-              key={posicion}
-              nombreColor={color}
-              borrarColor={props.borrarColor}
+              key={color._id}
+              color={color}
+              setColor={setColor}
             />
           ))}
     </Row>

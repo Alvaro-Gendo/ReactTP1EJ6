@@ -1,34 +1,49 @@
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import Swal from "sweetalert2";
+import { consultaAPI, crearColorAPI } from "../helpers/queires";
 import Colores from "./Colores";
 
 const Formulario = () => {
-  const colorRegExp = new RegExp(
-    /^#[a-zA-Z0-9]{6}|rgb\((?:\s*\d+\s*,){2}\s*[\d]+\)|rgba\((\s*\d+\s*,){3}[\d]+\)|hsl\(\s*\d+\s*(\s*\s*\d+){2}\)|hsla\(\s*\d+(\s*,\s*\d+\s*){2}\s*\s*[\d]+\)$/
-  );
 
-  const colorLS = JSON.parse(localStorage.getItem("arregleColor")) || [];
-  const [color, setColor] = useState("");
-  const [arregloColor, setArregloColor] = useState(colorLS);
 
-  useEffect(()=>{
-    localStorage.setItem("arregleColor", JSON.stringify(arregloColor))
-  },[arregloColor])
+  const [color, setColor] = useState([]);
 
-  const handleSubmit = (e) =>{
-    e.preventDefault();
-    if(colorRegExp.test(color)){
-      setArregloColor([...arregloColor, color]);
-      setColor("")
-    }else{
-      alert("Algo va mal")
-    }
-  }
+  useEffect(() => {
+    consultaAPI().then((respuesta) => {
+      setColor(respuesta);
+    });
+  }, []);
 
-  const borrarColor = (nombre) => {
-    let modColor = arregloColor.filter((item) =>(item !== nombre));
-    setArregloColor(modColor)
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    defaultValues: {
+      colorHexa: "",
+    },
+  });
+
+  const onSubmit = (datos) => {
+    crearColorAPI(datos).then((respuesta) => {
+      if (respuesta.status === 201) {
+        Swal.fire(
+          "Producto creado",
+          "El producto fue creado correctamente",
+          "success"
+        );
+        reset();
+        consultaAPI().then((respuesta) => {
+          setColor(respuesta);
+        });
+      } else {
+        Swal.fire("Ocurrio un error", "Vuelve a intentar", "error");
+      }
+    });
+  };
 
   return (
     <>
@@ -37,10 +52,16 @@ const Formulario = () => {
           Administrador de Colores
         </Card.Header>
         <Row>
-          <Form className="m-3" onSubmit={handleSubmit}>
+          <Form className="m-3" onSubmit={handleSubmit(onSubmit)}>
             <Col>
               <Form.Group className="d-flex justify-content-around">
-                <Card className="color"><img src="https://renataenamorada.com/wp-content/uploads/2014/04/Rueda_colores_newton.jpg" alt="Paleta de Colores" className="img-fluid w-100" /></Card>
+                <Card className="color">
+                  <img
+                    src="https://renataenamorada.com/wp-content/uploads/2014/04/Rueda_colores_newton.jpg"
+                    alt="Paleta de Colores"
+                    className="img-fluid w-100"
+                  />
+                </Card>
                 <Form.Control
                   required
                   type="text"
@@ -48,9 +69,21 @@ const Formulario = () => {
                   className="m-5 w-25"
                   minLength={4}
                   maxLength={7}
-                  onChange={(e) => setColor(e.target.value)}
-                  value={color}
+                  {...register("colorHexa", {
+                    required: "Campo olbigatorio",
+                    minLength: {
+                      value: 4,
+                      message: "Minimo 4 caracteres",
+                    },
+                    maxLength: {
+                      value: 7,
+                      message: "Maximo 7 caracteres",
+                    },
+                  })}
                 ></Form.Control>
+                <Form.Text className="text-danger">
+                  {errors.colorHexa?.message}
+                </Form.Text>
               </Form.Group>
             </Col>
             <Col className="d-flex justify-content-end">
@@ -62,7 +95,7 @@ const Formulario = () => {
         </Row>
       </Card>
       <Row>
-          <Colores arregloColor={arregloColor} borrarColor={borrarColor}/>
+        <Colores setColor={setColor} color={color} />
       </Row>
     </>
   );
